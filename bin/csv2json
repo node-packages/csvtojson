@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+var argv = require('yargs').argv;
+var csvjson = require('../lib/csv2json');
+var fs = require('fs');
+
+var output = argv.o || 'result.json';
+var delimiter = argv.d || ',';
+var config = argv.c;
+var filepath = argv.f;
+
+if (!filepath || !config) {
+  console.error('filepath is required!');
+  return;
+}
+
+var options = {
+  delimiter: delimiter,
+  filename: output
+};
+
+if (config && fs.statSync(config)) {
+  var conf = fs.readFileSync(config, 'utf8');
+  options = JSON.parse(conf);
+}
+
+csvjson.toJson(filepath, options);
+
