@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "globby": "^6.1.0",
     "object-hash": "^1.1.2",
     "yargs": "^6.3.0"
   },

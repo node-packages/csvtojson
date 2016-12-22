@@ -1,0 +1,9 @@
+{
+  "delimiter": ",",
+  "filename": "output",
+  "exclude": [
+    "picture",
+    "photo",
+    "photopath"
+  ]
+}

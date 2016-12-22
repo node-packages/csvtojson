@@ -2,20 +2,33 @@
 var argv = require('yargs').argv;
 var csvjson = require('../lib/csv2json');
 var fs = require('fs');
+var path = require('path');
+var globby = require('globby');
 
 var output = argv.o || 'result.json';
 var delimiter = argv.d || ',';
 var config = argv.c;
+var exclude = argv.x || '';
 var filepath = argv.f;
+var auto = argv.a;
 
-if (!filepath || !config) {
+function getFilename (filepath, ext) {
+  return path.basename(filepath, '.csv') + ext;
+}
+
+if (!filepath) {
   console.error('filepath is required!');
   return;
 }
 
+if (auto) {
+  output = getFilename(filepath, '.json');
+}
+
 var options = {
   delimiter: delimiter,
-  filename: output
+  filename: output,
+  exclude: exclude.toLowerCase().split(',')
 };
 
 if (config && fs.statSync(config)) {
@@ -23,5 +36,18 @@ if (config && fs.statSync(config)) {
   options = JSON.parse(conf);
 }
 
-csvjson.toJson(filepath, options);
+if (fs.statSync(filepath).isDirectory()) {
+  console.log('asasa');
+  globby(path.join(filepath, '*.csv')).then(function (paths) {
+    paths.forEach(function (p) {
+      console.log(p);
+      csvjson.toJson(p, Object.assign({}, options, { filename: getFilename(p, '.json') }));
+    });
+  }).catch(function (err) {
+    console.error(err);
+  });
+} else {
+  csvjson.toJson(filepath, options);
+}
+
 
